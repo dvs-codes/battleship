@@ -1,6 +1,6 @@
 import Ship from '../src/ship';
 
-describe.skip('testing the Ship class', () => {
+describe('testing the Ship class', () => {
   let ship1;
 
   // before each test we run this

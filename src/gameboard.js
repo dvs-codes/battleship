@@ -2,6 +2,7 @@ import Ship from './ship';
 
 class Gameboard {
   constructor() {
+    // here null is undiscoverd cell
     this.board = [
       [null, null, null, null, null, null, null, null, null, null],
       [null, null, null, null, null, null, null, null, null, null],
@@ -14,7 +15,7 @@ class Gameboard {
       [null, null, null, null, null, null, null, null, null, null],
       [null, null, null, null, null, null, null, null, null, null],
     ];
-    this.shipCounter = 5;
+    this.ships = [];
     this.shipPosition = 'horizontal';
   }
 
@@ -32,45 +33,62 @@ class Gameboard {
       const newShip = this.shipMaker();
       // checking for out of bound ship placement
       if (horizontalIndex + newShip.length < 10) {
-        this.shipCounter -= 1;
+        // checkin for empy cells
+        let isEmpty = true;
         for (let i = 0; i < newShip.length; i += 1) {
-          this.board[verticalIndex][horizontalIndex + i] = newShip;
+          if (this.board[verticalIndex][horizontalIndex + i] != null) {
+            isEmpty = false;
+            break;
+          }
+        }
+        if (isEmpty) {
+          for (let i = 0; i < newShip.length; i += 1) {
+            this.board[verticalIndex][horizontalIndex + i] = newShip;
+          }
+          this.ships.push(newShip);
+        } else {
+          return 'occupied cell';
         }
       }
-    } else {
-      const newShip = this.shipMaker();
-      // checking for out of bound ship placement
-      if (verticalIndex + newShip.length < 10) {
-        this.shipCounter -= 1;
+      return 'out of bound';
+    }
+
+    const newShip = this.shipMaker();
+    // checking for out of bound ship placement
+    if (verticalIndex + newShip.length < 10) {
+      // checking for empty cells
+      let isEmpty = true;
+      for (let i = 0; i < newShip.length; i += 1) {
+        if (this.board[verticalIndex + i][horizontalIndex] != null) {
+          isEmpty = false;
+          break;
+        }
+      }
+      if (isEmpty) {
         for (let i = 0; i < newShip.length; i += 1) {
           this.board[verticalIndex + i][horizontalIndex] = newShip;
         }
+        this.ships.push(newShip);
+      } else {
+        return 'occupied cell';
       }
     }
-  }
-
-  shipPlacer() {
-    if (horizontalIndex + newShip.length < 10) {
-      this.shipCounter -= 1;
-      for (let i = 0; i < newShip.length; i += 1) {
-        this.board[verticalIndex][horizontalIndex + i] = newShip.length;
-      }
-    }
+    return 'out of bound';
   }
 
   shipMaker() {
     let ship;
-    switch (this.shipCounter) {
-      case 5:
+    switch (this.ships.length) {
+      case 0:
         ship = new Ship(5);
         break;
-      case 4:
+      case 1:
         ship = new Ship(4);
         break;
-      case 3 || 2:
+      case 2 || 3:
         ship = new Ship(3);
         break;
-      case 1:
+      case 4:
         ship = new Ship(2);
         break;
       // no default
@@ -80,11 +98,18 @@ class Gameboard {
 
   receiveAttack(verticalIndex, horizontalIndex) {
     // attack on undiscovered only, 1 means already discovered cell
-    let cordinates = this.board[verticalIndex][horizontalIndex];
-    if (cordinates !== 1) {
-      cordinates.length -= 1;
-      cordinates = 1;
+    const currentShip = this.board[verticalIndex][horizontalIndex];
+    if (currentShip !== 1) {
+      currentShip.length -= 1;
+      this.board[verticalIndex][horizontalIndex] = 1;
     }
+    if (currentShip.length === 0) {
+      currentShip.sinkStatus = true;
+    }
+    if (this.ships.every((ship) => ship.sinkStatus === true)) {
+      return 'gameover';
+    }
+    return undefined;
   }
 }
 
