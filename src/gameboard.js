@@ -3,19 +3,21 @@ import Ship from './ship';
 class Gameboard {
   constructor() {
     // here null is undiscoverd cell
+    // a 5,5,5,5,5 series of cell indicates a horizontally placed ship with 5 length
     this.board = [
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
-      [null, null, null, null, null, null, null, null, null, null],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    this.ships = [];
+    this.ships = [this.shipMaker(5), this.shipMaker(4), this.shipMaker(3), this.shipMaker(3), this.shipMaker(2)];
+    this.currentShipIndex = 0;
     this.shipPosition = 'horizontal';
   }
 
@@ -28,88 +30,66 @@ class Gameboard {
   }
 
   placeShip(verticalIndex, horizontalIndex) {
-    // for horizontal placement
-    if (this.shipPosition === 'horizontal') {
-      const newShip = this.shipMaker();
-      // checking for out of bound ship placement
-      if (horizontalIndex + newShip.length < 10) {
-        // checkin for empy cells
-        let isEmpty = true;
-        for (let i = 0; i < newShip.length; i += 1) {
-          if (this.board[verticalIndex][horizontalIndex + i] != null) {
-            isEmpty = false;
-            break;
-          }
-        }
-        if (isEmpty) {
-          for (let i = 0; i < newShip.length; i += 1) {
-            this.board[verticalIndex][horizontalIndex + i] = newShip;
-          }
-          this.ships.push(newShip);
-        } else {
-          return 'occupied cell';
-        }
-      }
-      return 'out of bound';
-    }
-
-    const newShip = this.shipMaker();
-    // checking for out of bound ship placement
-    if (verticalIndex + newShip.length < 10) {
-      // checking for empty cells
-      let isEmpty = true;
-      for (let i = 0; i < newShip.length; i += 1) {
-        if (this.board[verticalIndex + i][horizontalIndex] != null) {
-          isEmpty = false;
-          break;
-        }
-      }
-      if (isEmpty) {
-        for (let i = 0; i < newShip.length; i += 1) {
-          this.board[verticalIndex + i][horizontalIndex] = newShip;
-        }
-        this.ships.push(newShip);
+    //only place ship if cell is 0
+    
+    let currentShipLength = this.ships[this.currentShipIndex].length
+    //variable must be true for entering the placement loop
+    let isCellValid = false
+    for (let i=0; i<currentShipLength; i++) {
+      //conditional for horizontal
+      if (this.shipPosition==='horizontal') {
+        if (horizontalIndex+i<10 && this.board[verticalIndex][horizontalIndex+i] ===0) {
+          isCellValid = true         
       } else {
-        return 'occupied cell';
+        isCellValid = false
+        break
+      }
+     } else {
+      //conditional for vertical
+        if (verticalIndex+i<10 && this.board[verticalIndex+i][horizontalIndex]===0) {
+          isCellValid = true
+        } else {
+          isCellValid = false
+          break
+        }
       }
     }
-    return 'out of bound';
+    
+    if (isCellValid) {
+      for (let i=0; i<currentShipLength; i++) {
+        //for horizontal
+        if (this.shipPosition==='horizontal') {
+          this.board[verticalIndex].splice(horizontalIndex+i,1,currentShipLength)
+        } else {
+          this.board[verticalIndex+i].splice(horizontalIndex,1,currentShipLength)
+        }
+      }
+      this.currentShipIndex++
+    } 
   }
 
-  shipMaker() {
-    let ship;
-    switch (this.ships.length) {
-      case 0:
-        ship = new Ship(5);
-        break;
-      case 1:
-        ship = new Ship(4);
-        break;
-      case 2 || 3:
-        ship = new Ship(3);
-        break;
-      case 4:
-        ship = new Ship(2);
-        break;
-      // no default
-    }
-    return ship;
+
+
+  shipMaker(length) {
+    let ship = new Ship(length);
+    return ship
   }
 
   receiveAttack(verticalIndex, horizontalIndex) {
-    // attack on undiscovered only, 1 means already discovered cell
-    const currentShip = this.board[verticalIndex][horizontalIndex];
-    if (currentShip !== 1) {
-      currentShip.length -= 1;
-      this.board[verticalIndex][horizontalIndex] = 1;
+    //if the target cordinate is empty, mark it as '1' so that it is recognised as discovered cell
+    if (this.board[verticalIndex][horizontalIndex]===0) {
+      this.board[verticalIndex].splice(horizontalIndex,1,1)
+    } else {
+      //before changing the cell take the info and store the hit on that specific ship
+      
+      let indexOfShip = 5 - this.board[verticalIndex][horizontalIndex]
+      this.ships[indexOfShip].hit()
+      //change the target cordinate to 'x' so that it is marked as a damaged ship, 
+      this.board[verticalIndex].splice(horizontalIndex,1,'x')
+      if (this.ships[indexOfShip].isSunk()) {
+        return 'ship sunk'
+      }
     }
-    if (currentShip.length === 0) {
-      currentShip.sinkStatus = true;
-    }
-    if (this.ships.every((ship) => ship.sinkStatus === true)) {
-      return 'gameover';
-    }
-    return undefined;
   }
 }
 

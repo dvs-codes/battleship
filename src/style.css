@@ -1,0 +1,67 @@
+body {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.heading {
+    margin-top: 10px;
+    font-size: 80px;
+    text-align: center;
+}
+
+.message {
+    font-size: 40px;
+    text-align: center;
+}
+
+.gamebaords {
+    display: flex;
+    border: 1px solid black;
+    min-width: 1300px;
+    justify-content: space-around;
+    padding-top: 50px;
+    padding-left: 200px;
+    padding-right: 200px;
+}
+
+.board {
+    border: 2px solid black;
+    width: 520px;
+    height: 520px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cell {
+    border: 1px solid black;
+    margin: 0;
+    height: 50px;
+    width: 50px;
+}
+
+.ship {
+    background-color: black;
+}
+
+.discovered {
+    background-color: grey;
+}
+
+.damaged {
+    background-color: red;
+}
+
+.git-credit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    background-color: rgb(76, 73, 73);
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: 0 0 5px rgb(86, 83, 83);
+    grid-row: 3/4;
+    grid-column: 1/3;
+}
