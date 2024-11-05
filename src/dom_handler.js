@@ -1,6 +1,7 @@
-import { playerA } from "."
+import { playerA, computer } from "."
 let playerBoard = document.querySelector(".player")
 let computerBoard = document.querySelector(".computer")
+let messageHeading = document.querySelector(".message")
 let positionTogglerButton = document.querySelector(".toggler")
 
 const boardRenderer = function (player) {
@@ -42,8 +43,10 @@ const boardRenderer = function (player) {
         }
     }
     //as the loading loop ends, add event listeners to each cell
-    eventListenerAdder(player)
-
+    //conditional for stopping eventlistener addition once all ships are placed
+    if (player.gameboard.currentShipIndex<5) {
+        eventListenerAdder(player)
+    }
 }
 
 const boardRefresher = function (player) {
@@ -61,9 +64,14 @@ const eventListenerAdder = function (player) {
             let cell = document.getElementById(`${i}${j}`)
 
             cell.addEventListener("click", ()=> { 
-                    player.gameboard.placeShip(i,j)
-                    boardRenderer(player)
-                    console.log(player.gameboard.board)
+                player.gameboard.placeShip(i,j)
+                boardRenderer(player)
+                //when 5 ships are placed reveal computer board
+                if (player.gameboard.currentShipIndex===5) {
+                    computerBoard.classList.add("board")
+                    boardRenderer(computer)
+                    messageHeading.innerText ="Begin attacking opponent's ship !"
+                }
             })
         }
     }

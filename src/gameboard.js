@@ -30,9 +30,10 @@ class Gameboard {
   }
 
   placeShip(verticalIndex, horizontalIndex) {
-    //only place ship if cell is 0
-    
+    //conditional for placing only 5 ships
+    if (this.currentShipIndex<5) {
     let currentShipLength = this.ships[this.currentShipIndex].length
+    
     //variable must be true for entering the placement loop
     let isCellValid = false
     for (let i=0; i<currentShipLength; i++) {
@@ -66,7 +67,7 @@ class Gameboard {
       }
       this.currentShipIndex++
     } 
-  }
+  }}
 
 
 

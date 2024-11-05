@@ -1,6 +1,6 @@
 import './style.css'
 import Player from "./player";
-import { boardRenderer, positionButtonToggler } from './dom_handler';
+import { boardRenderer } from './dom_handler';
 
 
 let playerA = new Player()
@@ -25,7 +25,7 @@ boardRenderer(playerA)
 // shipPlacer()
 // boardRenderer(computer)
 
-export {playerA}
+export {playerA, computer}
 
 
 
