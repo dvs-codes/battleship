@@ -15,15 +15,26 @@ computer.gameboard.placeShip(2,1)
 computer.gameboard.shipPositionToggler()
 computer.gameboard.placeShip(8,1)
 computer.gameboard.placeShip(9,8)
-// console.log(computer.gameboard)
-
-//placing player ships
-
-
 
 boardRenderer(playerA)
-// shipPlacer()
-// boardRenderer(computer)
+
+let roundToggler = function () {
+
+//starting a round, loop continues untill either game is not over
+while (!playerA.gameboard.gameOverCheck() && !computer.gameboard.gameOverCheck()) {
+    //setting first play as player
+    let currentPlayer = playerA
+    //toggling betweeen players
+    if (currentPlayer===playerA) {
+        currentPlayer = computer
+    } else {
+        currentPlayer = playerA
+    }
+}
+
+}
+
+
 
 export {playerA, computer}
 

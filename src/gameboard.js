@@ -80,17 +80,30 @@ class Gameboard {
     //if the target cordinate is empty, mark it as '1' so that it is recognised as discovered cell
     if (this.board[verticalIndex][horizontalIndex]===0) {
       this.board[verticalIndex].splice(horizontalIndex,1,1)
-    } else {
+    } else if (this.board[verticalIndex][horizontalIndex]!=='x' &&
+      this.board[verticalIndex][horizontalIndex]!==1
+    ) {
       //before changing the cell take the info and store the hit on that specific ship
       
       let indexOfShip = 5 - this.board[verticalIndex][horizontalIndex]
       this.ships[indexOfShip].hit()
       //change the target cordinate to 'x' so that it is marked as a damaged ship, 
       this.board[verticalIndex].splice(horizontalIndex,1,'x')
-      if (this.ships[indexOfShip].isSunk()) {
-        return 'ship sunk'
-      }
+
     }
+  }
+
+  gameOverCheck() {
+    //loop through all the ships, if all are sunk, return true
+    let isGameOver = false
+    this.ships.forEach((ship) => {
+      if (ship.isSunk()===true) {
+        isGameOver = true
+      } else {
+        isGameOver = false
+      }
+    })
+    return isGameOver
   }
 }
 

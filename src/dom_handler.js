@@ -12,15 +12,18 @@ const boardRenderer = function (player) {
         for (let j=0; j<10; j++) {
             let cell = document.createElement('p')
             cell.classList.add('cell')
-            cell.id = `${i}${j}`
+            cell.classList.add(`c${i}${j}`)
+            // cell.id = `${i}${j}`
             //taking data from gamebaord
             let cellValue = player.gameboard.board[i][j]
             
+            //condition for appropriate addition of data on proper board
             if (player.isComputer===false) {
                 playerBoard.appendChild(cell);
             } else {
                 computerBoard.appendChild(cell)
             }
+
             switch(cellValue) {
                 //0 is normal cell
                 case 0:
@@ -43,14 +46,16 @@ const boardRenderer = function (player) {
         }
     }
     //as the loading loop ends, add event listeners to each cell
-    //conditional for stopping eventlistener addition once all ships are placed
-    if (player.gameboard.currentShipIndex<5) {
-        eventListenerAdder(player)
-    }
+    //conditional for stopping eventlistener addition once all player ships are placed
+    if (player.gameboard.currentShipIndex<5 && player.isComputer===false) {
+        eventListenerAdder(player, "placement")
+    } else {
+        eventListenerAdder(player, "attack")
+    } 
 }
 
 const boardRefresher = function (player) {
-        //cleaning old data on html
+        //cleaning old data on html, condition for selecting boards
     if (player.isComputer===false) {
         playerBoard.innerText = ''
     } else {
@@ -58,21 +63,38 @@ const boardRefresher = function (player) {
     }
 }
 
-const eventListenerAdder = function (player) {
+const eventListenerAdder = function (player, type) {
     for (let i=0; i<10; i++) {
         for (let j=0; j<10; j++) {
-            let cell = document.getElementById(`${i}${j}`)
 
-            cell.addEventListener("click", ()=> { 
-                player.gameboard.placeShip(i,j)
-                boardRenderer(player)
-                //when 5 ships are placed reveal computer board
-                if (player.gameboard.currentShipIndex===5) {
-                    computerBoard.classList.add("board")
-                    boardRenderer(computer)
-                    messageHeading.innerText ="Begin attacking opponent's ship !"
-                }
-            })
+            let cell
+            // //conditional to select appropriate cell, computer or player
+            if (player.isComputer===true) {
+                cell = document.querySelector(`.computer .c${i}${j}`)
+            } else {
+                cell = document.querySelector(`.player .c${i}${j}`)
+            }
+
+            //two types of eventListeners, if placement than it 
+            //detects click and places ship, otherwise it trigger attack
+            if (type==='placement') {
+                cell.addEventListener("click", ()=> { 
+                    player.gameboard.placeShip(i,j)
+                    boardRenderer(player)
+                    //when 5 ships are placed reveal computer board
+                    if (player.gameboard.currentShipIndex===5) {
+                        computerBoard.classList.add("board")
+                        boardRenderer(computer)
+                        eventListenerAdder(computer, "attack")
+                        messageHeading.innerText ="Begin attacking opponent's ship !"
+                    }
+                })
+            } else if (type==='attack') {
+                cell.addEventListener("click", () => {
+                    player.gameboard.receiveAttack(i,j)
+                    boardRenderer(player)
+                })
+            }
         }
     }
 
@@ -83,4 +105,4 @@ positionTogglerButton.addEventListener("click", () => {
     positionTogglerButton.innerText = playerA.gameboard.shipPosition
 })
 
-export {boardRenderer, eventListenerAdder}
+export {boardRenderer}

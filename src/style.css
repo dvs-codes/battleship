@@ -16,6 +16,23 @@ body {
     text-align: center;
 }
 
+.toggler {
+    width: 100px;
+    justify-self: center;
+    align-self: center;
+    background-color: black;
+    color: white;
+    height: 50px;
+    transition: background-color 0.5s ease;
+    transition: color 0.5s ease;
+}
+
+.toggler:hover {
+
+    background-color: white;
+    color: black;
+}
+
 .gameboards {
     display: flex;
     border: 1px solid black;
